@@ -40,4 +40,4 @@ The main scence demonstrates these key features within only a few steps.
 ![Alt-Text](/Network_Setup_Example.png)
 
 #### Network Training Example ####
-![Alt-Text](/Network_Training_Example.png)
+![Alt-Text](/Network_Training.gif)
