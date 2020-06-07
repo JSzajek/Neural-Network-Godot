@@ -6,7 +6,7 @@ public class DenseNetworkVisualizer : Control
 {
 	private DllLoader loader;
 	private NeuralNetworkLinker linker;
-	private Neuron neuron;
+	private Axon axon;
 	private MouseCapture mouseCapture;
 	private Label outputDisplay;
 	private HBoxContainer networkWindow;
@@ -40,9 +40,12 @@ public class DenseNetworkVisualizer : Control
 
 	public bool Training {get; set;}
 
+	/// <summary>
+	/// Initializes parameters
+	/// </summary>
 	public override void _Ready()
 	{
-		neuron = (GD.Load("res://_Assets/Neuron.tscn") as PackedScene)?.Instance() as Neuron;
+		axon = (GD.Load("res://_Assets/Axon.tscn") as PackedScene)?.Instance() as Axon;
 		mouseCapture = GetNode<MouseCapture>("Interface/MouseCapture");
 		outputDisplay = GetNode<Label>("Canvas/Output");
 		networkWindow = GetNode<HBoxContainer>("Network_Display/Container");
@@ -57,6 +60,13 @@ public class DenseNetworkVisualizer : Control
 		this.Get<SetupWindow>("SetupWindow")?.Show();
 	}
 
+	/// <summary>
+	/// Sets up the dense network visualizer based on the passed
+	/// topology and whether it is imported or not. 
+	/// </summary>
+	/// <param name="topology">The topology of the current network</param>
+	/// <param name="imported">Whether the setup was imported or not</param>
+	/// <returns></returns>
 	public async void SetUp(List<int> topology, bool imported) {
 		this.topology = topology;
 		ClearDisplay();
@@ -74,31 +84,41 @@ public class DenseNetworkVisualizer : Control
 		linker.SetLearningRate(LearningRate);
 
 		for (int i = 0; i < topology.Count; i++) {
-			CreateNeuronLayer(topology[i], i == topology.Count - 1);
+			CreateAxonLayer(topology[i], i == topology.Count - 1);
 		}
 
 		// Wait for layouts to update positions
 		await ToSignal(GetTree(), "idle_frame");
 
-		// Connect Neurons
+		// Connect Axons
 		DisplayWeights();
 	}
 
+	/// <summary>
+	/// Helper method called when after setting input,
+	/// updating the input display
+	/// </summary>
 	private void SetInput() {
 		inputDisplay.Text = "Input Data Set";
 		var containerChildren = networkWindow.GetChildren();
 		var inputLayer = (containerChildren[0] as Node)?.GetChildren();
 		for (int i = 0; i < inputLayer.Count; i++) {
-			if (inputLayer[i] is Neuron neuron) {
-				neuron.Bias = InputData[i];
+			if (inputLayer[i] is Axon axon) {
+				axon.Bias = InputData[i];
 			}
 		}
 	}
 
+	/// <summary>
+	/// Clears the input
+	/// </summary>
 	public void ClearInput() {
 		InputData = null;
 	}
 
+	/// <summary>
+	/// Clears the network display
+	/// </summary>
 	public void ClearDisplay() {
 
 		outputDisplay.Text = "Current Prediction %:";
@@ -109,15 +129,20 @@ public class DenseNetworkVisualizer : Control
 		}
 	}
 
-	private void CreateNeuronLayer(int size, bool last) {
+	/// <summary>
+	/// Helper method that creates a 
+	/// </summary>
+	/// <param name="size"></param>
+	/// <param name="last"></param>
+	private void CreateAxonLayer(int size, bool last) {
 		var vContainer = new VBoxContainer();
 		vContainer.Alignment = BoxContainer.AlignMode.Center;
 		networkWindow.AddChild(vContainer);
 
 		for (int i = 0; i < size; i++) {
             
-			var newNeuron = neuron.Duplicate() as Neuron;
-			newNeuron.Bias = linker.GetNeuronBias(networkWindow.GetChildCount() - 1, i);
+			var newNeuron = axon.Duplicate() as Axon;
+			newNeuron.Bias = linker.GetAxonBias(networkWindow.GetChildCount() - 1, i);
 			newNeuron.Name = (networkWindow.GetChildCount() - 1) + "_" + vContainer.GetChildCount();
 
             // Label last layer with classification index
@@ -140,13 +165,13 @@ public class DenseNetworkVisualizer : Control
 		var containerLayer = (containerChildren[index] as Node).GetChildren();
 		var prevContainerLayer = (containerChildren[index - 1] as Node).GetChildren();
 		for (int i = 0; i < containerLayer.Count; i++) {
-			if (containerLayer[i] is Neuron neuron) {
+			if (containerLayer[i] is Axon axon) {
 				if (i != containerLayer.Count - 1) {
-					neuron.Bias = linker.GetNeuronBias(index, i);
+					axon.Bias = linker.GetAxonBias(index, i);
 				}
 				for (int j = 0; j < prevContainerLayer.Count; j++) {
 					var weight = linker.GetDendriteWeight(index, i, j);
-					neuron.ConnectToNode(prevContainerLayer[j] as Neuron, weight);
+					axon.ConnectToNode(prevContainerLayer[j] as Axon, weight);
 				}
 			}
 		}
@@ -160,7 +185,7 @@ public class DenseNetworkVisualizer : Control
 			var prediction = linker.TrainNetwork(input, output);
 			outputDisplay.Text = "Current Prediction %: [" + string.Join(", ", prediction) + "]\nRun: " + (n + 1); 
 
-			var lastLayer = networkWindow.GetChildren<VBoxContainer>()?.Last()?.GetChildren<Neuron>();
+			var lastLayer = networkWindow.GetChildren<VBoxContainer>()?.Last()?.GetChildren<Axon>();
 			for (int index = 0; index < lastLayer.Count; index++) {
 				lastLayer[index].Bias = prediction[index];
 			}

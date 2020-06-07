@@ -1,11 +1,17 @@
 using Godot;
 
+/// <summary>
+/// Custom behavior class for drag and drop scrolling
+/// </summary>
 public class Network_Display : ScrollContainer
 {
     private bool swiping = false;
     private Vector2 swipeStart;
     private Vector2 swipeMouseStart;
 
+    /// <summary>
+    /// Input event catch
+    /// </summary>
     public override void _Input(InputEvent @event) {
         if (@event is InputEventMouseButton mouseButton) {
             if (mouseButton.Pressed) {

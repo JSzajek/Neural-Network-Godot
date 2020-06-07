@@ -29,7 +29,7 @@ public class Dll
     {
         pDll = NativeMethods.LoadLibrary(absPath);
         if (pDll == IntPtr.Zero) {
-            throw (new Exception("AStar Binding dll not found."));
+            throw (new Exception(absPath + " dll not found."));
         }
     }
 
@@ -39,7 +39,7 @@ public class Dll
     public void Unload()
     {
         if (!NativeMethods.FreeLibrary(pDll)) {
-            throw (new Exception("AStar Binding dll not unloaded."));
+            throw (new Exception("dll not unloaded."));
         }
     }
 

@@ -2,15 +2,17 @@ using Godot;
 using System.Collections.Generic;
 using System.Linq;
 
+/// <summary>
+/// Custom control representing a mouse drawing
+/// capture box
+/// </summary>
 public class MouseCapture : Control
 {
 	public bool CanDraw {get; set;}
 	public bool Draw {get; set;}
 	public List<float> output { get; set; } = new List<float>();
 	public int ImageSize {get; set;}
-
 	public List<Line2D> lines {get; set;}
-
 	public int OutputSize {get; set;}
 
 	private DenseNetworkVisualizer visualizer;
@@ -19,7 +21,9 @@ public class MouseCapture : Control
 	private Line2D drawLine;
 	private Control debug;
 
-
+	/// <summary>
+	/// Initializes the parameters 
+	/// </summary>
 	public override void _Ready() {
 		visualizer = GetParent().GetParentOrNull<DenseNetworkVisualizer>();
 		lines = new List<Line2D>();
@@ -29,13 +33,15 @@ public class MouseCapture : Control
 		debug = this.Get<Control>("ViewportContainer/Drawport/Debug");
 	}
 
-
+	/// <summary>
+	/// Catches input draw events
+	/// </summary>
 	public override void _Input(InputEvent @event) {
 		if (@event.IsActionPressed("draw") && !Draw && CanDraw) {
 			texRect.Texture = null;
 			ClearInput();
 			Draw = true;
-			makeLine();
+			drawLine.Show(); 
 			AddVec();
 		}
 		if ((!CanDraw && Draw) || @event.IsActionReleased("draw") && Draw) {
@@ -44,18 +50,10 @@ public class MouseCapture : Control
 		}
 	}
 
-	public void setOutputSize(int newSize) {
-		OutputSize = newSize;
-	}
-
-	public void makeLine() {
-		drawLine.Show(); 
-	}
-
-	public void setImageSize(int newSize) {
-		ImageSize = newSize;
-	}
-
+	/// <summary>
+	/// Closes the drawing of the current line. Doing post-processing of
+	/// line analysis and trimming and creating the output data
+	/// </summary>
 	public async void CloseLine() {
 		var points = drawLine?.Points;
 		var PointAnalysis = new PointAnalysis();
@@ -69,7 +67,7 @@ public class MouseCapture : Control
 			lines.Add(drawnLine);
 		}
 
-		lines.OrderBy(x => calculateMagnitude(x.Points[0], x.Points[1]));
+		lines.OrderBy(x => x.Points[0].DistanceSquaredTo(x.Points[1])); 
 		lines = lines.Take(OutputSize).ToList();
 
 		List<float> outputs = new List<float>();
@@ -79,7 +77,7 @@ public class MouseCapture : Control
 				outputs.Add(0);
 			}
 			else {
-				output.Add(calculateMagnitude(lines[i].Points[0], lines[i].Points[1]));
+				output.Add(lines[i].Points[0].DistanceSquaredTo(lines[i].Points[1]));
 				output.Add(calculateDirection(lines[i].Points[0], lines[i].Points[1]));
 			}
 		}
@@ -108,18 +106,19 @@ public class MouseCapture : Control
 		texRect.Texture = tex;
 	}
 
-	private bool lineComparison(Line line1, Line line2) {
-		return calculateMagnitude(line1.A, line1.B) > calculateMagnitude(line2.A, line2.B);
-	}
-
-	private float calculateMagnitude(Vector2 point1, Vector2 point2) {
-		return Mathf.Sqrt(Mathf.Pow(point1.x - point2.x, 2) + Mathf.Pow(point1.y - point2.y, 2));
-	}
-
+	/// <summary>
+	/// Helper method calculating the direction from point1 to point2
+	/// </summary>
+	/// <param name="point1">The first point</param>
+	/// <param name="point2">The second point</param>
+	/// <returns>The direction from point1 to point2</returns>
 	private float calculateDirection(Vector2 point1, Vector2 point2) {
 		return Mathf.Atan2(point2.y - point1.y, point2.x - point1.x);
 	}
 	
+	/// <summary>
+	/// Adds the point vector of the current draw
+	/// </summary>
 	private async void AddVec() {
 		if (Draw) {
 			drawLine?.AddPoint(GetLocalMousePosition());
@@ -128,6 +127,11 @@ public class MouseCapture : Control
 		}
 	}
 
+	/// <summary>
+	/// Gets the image width based parameters
+	/// </summary>
+	/// <param name="arr">The point values of the drawn line</param>
+	/// <returns>The min and max X coordinate and width capturing the drawn line</returns>
 	private (float, float, float) GetImageWidth(Vector2[] arr) {
 		var max = float.MinValue;
 		var min = float.MaxValue;
@@ -144,6 +148,11 @@ public class MouseCapture : Control
 		return (min, max - min, max);
 	}
 
+	/// <summary>
+	/// Gets the image height based parameters
+	/// </summary>
+	/// <param name="arr">The point values of the drawn line</param>
+	/// <returns>The min and max Y coordinate and height capturing the drawn line</returns>
 	private (float, float, float) GetImageHeight(Vector2[] arr) {
 		var max = float.MinValue;
 		var min = float.MaxValue;
@@ -160,14 +169,23 @@ public class MouseCapture : Control
 		return (min, max - min, max);
 	}
 
+	/// <summary>
+	/// mouse entered signal event catch
+	/// </summary>
 	private void _on_MouseCapture_mouse_entered() {
 		CanDraw = true;
 	}
 
+	/// <summary>
+	/// mouse exit signal event catch
+	/// </summary>
 	private void _on_MouseCapture_mouse_exited() {
 		CanDraw = false;
 	}
 
+	/// <summary>
+	/// Submit button pressed signal catch
+	/// </summary>
 	private void _on_Submit_pressed() {
 		if (output?.Count > 0 && visualizer != null) {
 			output = output.Take(OutputSize).ToList();
@@ -175,6 +193,9 @@ public class MouseCapture : Control
 		}
 	}
 
+	/// <summary>
+	/// Clear button pressed signal catch
+	/// </summary>
 	private void _on_Clear_pressed() {
 		texRect.Texture = null;
 		if (GetParent().HasMethod("ClearInput")) {
@@ -183,6 +204,9 @@ public class MouseCapture : Control
 		}
 	}
 
+	/// <summary>
+	/// Clears the input viewport of previous drawn line
+	/// </summary>
 	private void ClearInput() {
 		foreach(var child in debug.GetChildren<Line2D>()) {
 			debug.RemoveChild(child);
@@ -191,6 +215,9 @@ public class MouseCapture : Control
 	}
 }
 
+/// <summary>
+/// Struct representing a simple line
+/// </summary>
 public struct Line {
 	public Vector2 A;
 	public Vector2 B;
@@ -201,9 +228,17 @@ public struct Line {
 	}
 }
 
+/// <summary>
+/// Point analysis class simplifying drawn line
+/// </summary>
 public class PointAnalysis {
 	private readonly float tolerance = 0.5f;
 
+	/// <summary>
+	/// Runs the analysis to simplify the drawn line's points
+	/// </summary>
+	/// <param name="points">The points of the drawn line</param>
+	/// <returns>Simplified list of lines</returns>
 	public List<Line> Run(Vector2[] points){
 		if (points.Length < 1) {
 			return null;
@@ -232,11 +267,23 @@ public class PointAnalysis {
 		return results;
 	}
 
+	/// <summary>
+	/// Helper method that calculates the slope of the points
+	/// </summary>
+	/// <param name="start">The start vector</param>
+	/// <param name="end">The end vector</param>
+	/// <returns>The slope</returns>
 	private float pointSlope(Vector2 start, Vector2 end) {
 		var denom = (end.x - start.x);
 		return denom != 0 ? (float) (end.y - start.y) / denom : 0; 
 	}
 
+	/// <summary>
+	/// Helper method that calculates the relative difference between two slope values
+	/// </summary>
+	/// <param name="slopeA">The first slope value</param>
+	/// <param name="slopeB">The second slope value</param>
+	/// <returns>The relative difference</returns>
 	private float relDifference(float slopeA, float slopeB) {
 		var diff = Mathf.Abs(slopeA - slopeB);
 		var denom = Mathf.Max(Mathf.Abs(slopeA), Mathf.Abs(slopeB));

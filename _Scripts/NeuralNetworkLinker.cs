@@ -24,10 +24,10 @@ public class NeuralNetworkLinker : Dll {
 	private delegate IntPtr trainNetwork([In][MarshalAs(UnmanagedType.LPArray, ArraySubType=UnmanagedType.R4)] float[] input, int id1, [In][MarshalAs(UnmanagedType.LPArray, ArraySubType=UnmanagedType.R4)] float[] output, int od1);
 
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-	private delegate float getNeuronBias(int layerIndex, int neuronIndex);
+	private delegate float getAxonBias(int layerIndex, int axonIndex);
 
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-	private delegate float getDendriteWeight(int layerIndex, int neuronIndex, int dendriteIndex);
+	private delegate float getDendriteWeight(int layerIndex, int axonIndex, int dendriteIndex);
 
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     private delegate void clearNetwork();
@@ -49,7 +49,7 @@ public class NeuralNetworkLinker : Dll {
 	private setupDenseNetwork _setupDenseNetwork;
 	private setLearningRate _setLearningRate;
 	private trainNetwork _trainNetwork;
-	private getNeuronBias _getNeuronBias;
+	private getAxonBias _getAxonBias;
 	private getDendriteWeight _getDendriteWeight;
 	private clearNetwork _clearNetwork;
 	private exportNetwork _exportNetwork;
@@ -65,12 +65,10 @@ public class NeuralNetworkLinker : Dll {
 	/// <returns></returns>
 	public NeuralNetworkLinker(string filePath) : base(filePath)
 	{
-		// _setupDenseNetwork = (setupDenseNetwork)Marshal.GetDelegateForFunctionPointer(NativeMethods.GetProcAddress(pDll, "setupDenseNetwork"), typeof(setupDenseNetwork));
-
 		_setupDenseNetwork = pDll.GetFuncDelegate<setupDenseNetwork>("setupDenseNetwork");
 		_setLearningRate = pDll.GetFuncDelegate<setLearningRate>("setLearningRate");
 		_trainNetwork = pDll.GetFuncDelegate<trainNetwork>("trainNetwork");
-		_getNeuronBias = pDll.GetFuncDelegate<getNeuronBias>("getNeuronBias");
+		_getAxonBias = pDll.GetFuncDelegate<getAxonBias>("getAxonBias");
 		_getDendriteWeight = pDll.GetFuncDelegate<getDendriteWeight>("getDendriteWeight");
 		_clearNetwork = pDll.GetFuncDelegate<clearNetwork>("clearNetwork");
 		_exportNetwork = pDll.GetFuncDelegate<exportNetwork>("exportNetwork");
@@ -78,14 +76,28 @@ public class NeuralNetworkLinker : Dll {
 		_networkTopology = pDll.GetFuncDelegate<networkTopology>("networkTopology");
 	}
 
+	/// <summary>
+	/// Sets up a dense neural network with the passed topology.
+	/// </summary>
+	/// <param name="topology">The topology of the network</param>
 	public void SetupDenseNetwork(List<int> topology) {
 		_setupDenseNetwork(topology.ToArray(), topology.Count);
 	}
 
+	/// <summary>
+	/// Sets the learning rate of the current network.
+	/// </summary>
+	/// <param name="learningRate">The new learning rate of the network</param>
 	public void SetLearningRate(float learningRate) {
 		_setLearningRate(learningRate);
 	}
 
+	/// <summary>
+	/// Trains the current network with the passed input and desired output values.
+	/// </summary>
+	/// <param name="input">The input values</param>
+	/// <param name="output">The desired output values</param>
+	/// <returns>The current prediction of the network</returns>
 	public float[] TrainNetwork(List<float> input, List<float> output) {
 		IntPtr resultPtr = _trainNetwork(input.ToArray(), input.Count, output.ToArray(), output.Count);
 		
@@ -102,18 +114,39 @@ public class NeuralNetworkLinker : Dll {
 		return outputVals.Skip(1).Take(size).ToArray();
 	}
 
-	public float GetNeuronBias(int layerIndex, int neuronIndex) {
-		return _getNeuronBias(layerIndex, neuronIndex);
+	/// <summary>
+	/// Retieves the axon bias at the passed indices (for visualization)
+	/// </summary>
+	/// <param name="layerIndex">The layers index</param>
+	/// <param name="axonIndex">The axons index</param>
+	/// <returns></returns>
+	public float GetAxonBias(int layerIndex, int axonIndex) {
+		return _getAxonBias(layerIndex, axonIndex);
 	}
 
-	public float GetDendriteWeight(int layerIndex, int neuronIndex, int dendriteIndex) {
-		return _getDendriteWeight(layerIndex, neuronIndex, dendriteIndex);
+	/// <summary>
+	/// Retrieves the dendrite weight at the passed indices (for visualization)
+	/// </summary>
+	/// <param name="layerIndex">The layers index</param>
+	/// <param name="axonIndex">The axons index</param>
+	/// <param name="dendriteIndex">The dendrites index</param>
+	/// <returns>The dendrite weight</returns>
+	public float GetDendriteWeight(int layerIndex, int axonIndex, int dendriteIndex) {
+		return _getDendriteWeight(layerIndex, axonIndex, dendriteIndex);
 	}
 
+	/// <summary>
+	/// Clears the current network
+	/// </summary>
 	public void ClearNetwork() {
 		_clearNetwork();
 	}
 
+	/// <summary>
+	/// Exports the current network to the binary file
+	/// saved at the passed file path
+	/// </summary>
+	/// <param name="filepath">filepath of the binary file to save to</param>
 	public void ExportNetwork(string filepath) {
 		IntPtr resultPtr = _exportNetwork();
 		
@@ -140,6 +173,11 @@ public class NeuralNetworkLinker : Dll {
 		}
 	}
 
+	/// <summary>
+	/// Imports the network stored within the passed binary
+	/// file at the file path location.
+	/// </summary>
+	/// <param name="filepath">The binary file path location</param>
 	public void ImportNetwork(string filepath) {
 		List<float> importValues = new List<float>();
         using (var filestream = File.Open(filepath, FileMode.Open))
@@ -153,13 +191,15 @@ public class NeuralNetworkLinker : Dll {
 			filestream.Close();
         }
 		// Assure there is atleast a layer index
-		var temp = string.Join(", ", importValues);
-		GD.Print(temp);
 		if (importValues.Count > 2) {
 			_importNetwork(importValues.ToArray(), importValues.Count());
 		}
 	}
 
+	/// <summary>
+	/// Retrieves the current network topology
+	/// </summary>
+	/// <returns>The current network topology</returns>
 	public List<int> NetworkTopology() {
 		IntPtr resultPtr = _networkTopology();
 		
