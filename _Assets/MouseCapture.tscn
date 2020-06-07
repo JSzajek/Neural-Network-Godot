@@ -1,0 +1,81 @@
+[gd_scene load_steps=2 format=2]
+
+[ext_resource path="res://_Scripts/MouseCapture.cs" type="Script" id=1]
+
+[node name="MouseCapture" type="Control"]
+margin_right = 340.0
+margin_bottom = 370.0
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Frame" type="ColorRect" parent="."]
+margin_right = 340.0
+margin_bottom = 340.0
+mouse_filter = 2
+color = Color( 0, 0, 0, 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="ViewportContainer" type="ViewportContainer" parent="."]
+anchor_left = 0.5
+anchor_right = 0.5
+margin_left = -160.0
+margin_top = 10.0
+margin_right = 160.0
+margin_bottom = 330.0
+mouse_filter = 2
+
+[node name="Drawport" type="Viewport" parent="ViewportContainer"]
+size = Vector2( 320, 320 )
+handle_input_locally = false
+render_target_update_mode = 3
+
+[node name="Line2D" type="Line2D" parent="ViewportContainer/Drawport"]
+width = 15.0
+default_color = Color( 0, 0, 0, 1 )
+
+[node name="Debug" type="Control" parent="ViewportContainer/Drawport"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_right = 40.0
+margin_bottom = 40.0
+mouse_filter = 2
+
+[node name="TextureRect" type="TextureRect" parent="."]
+anchor_left = 0.5
+anchor_right = 0.5
+margin_left = -160.0
+margin_top = 10.0
+margin_right = 160.0
+margin_bottom = 330.0
+mouse_filter = 2
+
+[node name="Submit" type="Button" parent="."]
+anchor_top = 1.0
+anchor_bottom = 1.0
+margin_left = 25.0
+margin_top = -25.0
+margin_right = 125.0
+margin_bottom = 10.0
+text = "Submit"
+
+[node name="Clear" type="Button" parent="."]
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = -120.0
+margin_top = -25.0
+margin_right = -20.0
+margin_bottom = 10.0
+text = "Clear"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+[connection signal="mouse_entered" from="." to="." method="_on_MouseCapture_mouse_entered"]
+[connection signal="mouse_exited" from="." to="." method="_on_MouseCapture_mouse_exited"]
+[connection signal="pressed" from="Submit" to="." method="_on_Submit_pressed"]
+[connection signal="pressed" from="Clear" to="." method="_on_Clear_pressed"]

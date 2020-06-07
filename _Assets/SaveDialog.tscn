@@ -1,0 +1,17 @@
+[gd_scene format=2]
+
+[node name="SaveDialog" type="FileDialog"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -275.0
+margin_top = -187.5
+margin_right = 275.0
+margin_bottom = 187.5
+resizable = true
+dialog_hide_on_ok = true
+access = 2
+filters = PoolStringArray( "*.net", "*.network" )
+current_dir = "C:/Users/Justin/Documents/Godot Projects/Neural Network Visualizer"
+current_path = "C:/Users/Justin/Documents/Godot Projects/Neural Network Visualizer/"

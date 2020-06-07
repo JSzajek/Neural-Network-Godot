@@ -1,0 +1,100 @@
+[gd_scene load_steps=7 format=2]
+
+[ext_resource path="res://_Scripts/MainMenuCanvas.cs" type="Script" id=1]
+[ext_resource path="res://_Gui_Imports/Title_Font.res" type="DynamicFont" id=2]
+[ext_resource path="res://_Gui_Imports/Normal_Font.res" type="DynamicFont" id=3]
+[ext_resource path="res://_Gui_Imports/Rolling_Hills.png" type="Texture" id=4]
+
+[sub_resource type="Shader" id=1]
+code = "shader_type canvas_item;
+
+uniform vec2 direction = vec2(1.0,0.0);
+uniform float speed_scale = 0.05;
+
+void fragment(){
+
+     vec2 move = direction * TIME * speed_scale;
+
+     COLOR = texture(TEXTURE, UV + move);   
+}"
+
+[sub_resource type="ShaderMaterial" id=2]
+shader = SubResource( 1 )
+shader_param/direction = Vector2( 1, 0 )
+shader_param/speed_scale = 0.05
+
+[node name="MainMenuCanvas" type="Control"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Background" type="TextureRect" parent="."]
+material = SubResource( 2 )
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+texture = ExtResource( 4 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Title" type="Label" parent="."]
+anchor_left = 0.5
+anchor_right = 0.5
+margin_left = -244.5
+margin_top = 50.0
+margin_right = 244.5
+margin_bottom = 107.0
+custom_fonts/font = ExtResource( 2 )
+text = "Neural Network Examples"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Dense_Network" type="Button" parent="."]
+anchor_top = 0.5
+anchor_bottom = 0.5
+margin_left = 100.0
+margin_top = -125.0
+margin_right = 525.0
+margin_bottom = -72.0
+custom_fonts/font = ExtResource( 3 )
+text = "    Dense Network"
+align = 0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Convolutional_Network" type="Button" parent="."]
+anchor_top = 0.5
+anchor_bottom = 0.5
+margin_left = 125.0
+margin_top = -25.0
+margin_right = 550.0
+margin_bottom = 28.0
+custom_fonts/font = ExtResource( 3 )
+disabled = true
+text = "    Convolutional Network"
+align = 0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Deep_QLearning" type="Button" parent="."]
+anchor_top = 0.5
+anchor_bottom = 0.5
+margin_left = 150.0
+margin_top = 75.0
+margin_right = 575.0
+margin_bottom = 128.0
+custom_fonts/font = ExtResource( 3 )
+disabled = true
+text = "    Deep Q-Learning"
+align = 0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+[connection signal="pressed" from="Dense_Network" to="." method="_on_Dense_Network_pressed"]
