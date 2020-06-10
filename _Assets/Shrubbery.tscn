@@ -1,0 +1,32 @@
+[gd_scene load_steps=7 format=2]
+
+[ext_resource path="res://_Materials/Leaves.material" type="Material" id=1]
+[ext_resource path="res://_Materials/Bark.material" type="Material" id=2]
+[ext_resource path="res://_Scripts/Shrubbery.cs" type="Script" id=3]
+
+[sub_resource type="CubeMesh" id=1]
+
+[sub_resource type="CylinderMesh" id=2]
+top_radius = 0.4
+bottom_radius = 0.4
+
+[sub_resource type="BoxShape" id=3]
+extents = Vector3( 1, 1.5, 1 )
+
+[node name="Shrubbery" type="KinematicBody"]
+script = ExtResource( 3 )
+MoveSpeed = 4.0
+
+[node name="Leaves" type="MeshInstance" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0 )
+mesh = SubResource( 1 )
+material/0 = ExtResource( 1 )
+
+[node name="Stump" type="MeshInstance" parent="."]
+transform = Transform( 1, 0, 0, 0, 0.6, 0, 0, 0, 1, 0, 0.588478, 0 )
+mesh = SubResource( 2 )
+material/0 = ExtResource( 2 )
+
+[node name="CollisionShape" type="CollisionShape" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.56783, 0 )
+shape = SubResource( 3 )

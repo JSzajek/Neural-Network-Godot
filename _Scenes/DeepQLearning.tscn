@@ -1,0 +1,21 @@
+[gd_scene load_steps=4 format=2]
+
+[ext_resource path="res://_Assets/RiverWorld.tscn" type="PackedScene" id=1]
+[ext_resource path="res://_Scripts/DeepQLearning.cs" type="Script" id=2]
+[ext_resource path="res://_Assets/DeepQLearningCanvas.tscn" type="PackedScene" id=4]
+
+[node name="DeepQLearning" type="Node"]
+script = ExtResource( 2 )
+
+[node name="DirectionalLight" type="DirectionalLight" parent="."]
+transform = Transform( 0.965926, 0.12941, -0.224144, 0, 0.866025, 0.5, 0.258819, -0.482963, 0.836516, 0, 13, 0 )
+light_color = Color( 0.913725, 0.843137, 0.556863, 1 )
+light_energy = 0.7
+shadow_enabled = true
+
+[node name="Canvas" parent="." instance=ExtResource( 4 )]
+
+[node name="Camera" type="Camera" parent="."]
+transform = Transform( -1, -3.55271e-15, -8.74228e-08, -7.57103e-08, 0.5, 0.866025, 4.37114e-08, 0.866025, -0.5, 0, 13.1411, -8.75092 )
+
+[node name="RiverWorld" parent="." instance=ExtResource( 1 )]
