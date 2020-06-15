@@ -84,3 +84,72 @@ void importNetwork(float* data, int d1)
 int* networkTopology() {
 	return NeuralNetworkLinker::networkTopology();
 }
+
+// Sets up the deep q learning network
+void setupDeepQLearning(int stateSize, int actionSize, int memorySize, int sampleSize)
+{
+	NeuralNetworkLinker::setupDeepQNetwork(stateSize, actionSize, memorySize, sampleSize);
+}
+
+// Pre trains the deep q learning network with starting memories
+void preTrainNetwork(float* data, int d1, int d2)
+{
+	// convert float data into list of memories
+	// Memory format: [state... , action, reward, next_state... , done]
+	int stateSize = (d2 - 3) / 2;
+
+	vector<Memory*> memories;
+	for (int i = 0; i < d1; i++) {
+		vector<float> state;
+		int j = 0;
+		for (; j < stateSize; j++) {
+			state.push_back(data[(i*d2) + j]);
+		}
+		int action = data[(i * d2) + j++];
+		int reward = data[(i * d2) + j++];
+
+		vector<float> nextState;
+		int k = j;
+		for (; k < j + stateSize; k++) {
+			nextState.push_back(data[(i * d2) + k]);
+		}
+		bool done = data[(i * d2) + k] == 1;
+		memories.push_back(new Memory(state, action, reward, nextState, done));
+	}
+	NeuralNetworkLinker::preTrainQLearningNetwork(memories);
+}
+
+// Adds the memory to the deep q learning temporal lobe
+void addMemory(float* data, int d1, int stateSize) {
+	vector<float> state;
+	int j = 0;
+	for (; j < stateSize; j++) {
+		state.push_back(data[j]);
+	}
+	int action = data[j++];
+	int reward = data[j++];
+
+	vector<float> nextState;
+	int k = j;
+	for (; k < j + stateSize; k++) {
+		nextState.push_back(data[k]);
+	}
+	bool done = data[k] == 1;
+	NeuralNetworkLinker::addMemory(new Memory(state, action, reward, nextState, done));
+}
+
+// Predicts the best possible action based on the current state and current network bias
+int predictAction(int decayStep, float* state, int d1)
+{
+	vector<float> data;
+	for (int i = 0; i < d1; i++) {
+		data.push_back(state[i]);
+	}
+	return NeuralNetworkLinker::predictQLearning(decayStep, data);
+}
+
+// Trains the current deep q learning network with the passed amount of iterations
+void trainQLearningNetwork(int epochs)
+{
+	NeuralNetworkLinker::trainQLearningNetwork(epochs);
+}

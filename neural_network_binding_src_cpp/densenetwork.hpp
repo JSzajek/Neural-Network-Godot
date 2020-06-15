@@ -14,6 +14,8 @@ namespace neuralnetwork {
 		const vector<float> Output();
 		const vector<float> Train(vector<float> input, vector<float> output);
 
+		const vector<float> Predict(vector<float> input);
+
 		const string toString();
 	};
 }

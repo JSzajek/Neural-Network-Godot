@@ -23,6 +23,8 @@ namespace neuralnetwork {
 
 		virtual const vector<float> Output() { return {}; }
 
+		virtual const vector<float> Predict(vector<float> input) { return {}; }
+
 		virtual const vector<float> Train(vector<float> input, vector<float> output) { return {}; }
 
 		virtual const string toString() { return "Base Neural Network"; }

@@ -82,12 +82,15 @@ bool DenseNetwork::Run(vector<float> input) {
 const vector<float> DenseNetwork::Output() {
 	vector<float> result;
 	Layer* last = layers.back();
-	cout << "Output:" << endl;
-	cout << toString() << endl;
 	for (int i = 0; i < last->axons.size(); i++) {
 		result.push_back(last->axons.at(i)->value);
 	}
 	return result;
+}
+
+const vector<float> DenseNetwork::Predict(vector<float> input) {
+	if (!Run(input)) { return {}; }
+	return Output();
 }
 
 // Trains the network with backwards propogation with the given input and desired output

@@ -4,6 +4,7 @@
 #include <math.h>
 #include <vector>
 #include <time.h>
+#include <algorithm>
 
 using namespace std;
 
@@ -11,6 +12,14 @@ namespace neuralnetwork {
 	
 	inline float RandRange(float a, float b) {
 		return a + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (b - a)));
+	}
+
+	inline int RandRangeInt(int min, int max) {
+		return min + (rand() % static_cast<int>(max - min + 1));
+	}
+
+	inline int ArgMax(vector<float> data) {
+		return distance(data.begin(), max_element(data.begin(), data.end()));
 	}
 	
 	// Struct representing a drendrite

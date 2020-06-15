@@ -7,6 +7,7 @@ using namespace neuralnetwork;
 using namespace std;
 
 NeuralNetwork* NeuralNetworkLinker::network;
+DeepQNetwork* NeuralNetworkLinker::qNetwork;
 
 // Linker destructor
 NeuralNetworkLinker::~NeuralNetworkLinker() {
@@ -16,6 +17,11 @@ NeuralNetworkLinker::~NeuralNetworkLinker() {
 // Sets up the relevent parameters involved.
 void NeuralNetworkLinker::setupDenseNetwork(vector<int> topology) {
 	network = new DenseNetwork(topology);
+}
+
+// Sets up the deep q learning network with the parameters involved
+void NeuralNetworkLinker::setupDeepQNetwork(int stateSize, int actionSize, int memorySize, int sampleSize) {
+	qNetwork = new DeepQNetwork(stateSize, actionSize, memorySize, sampleSize);
 }
 
 // Sets the learning rate of the current network
@@ -28,10 +34,38 @@ float* NeuralNetworkLinker::trainNetwork(vector<float> input, vector<float> outp
 	return data;
 }
 
+// Pre trains the deep q learning network with starting memories
+void NeuralNetworkLinker::preTrainQLearningNetwork(vector<Memory*> data) 
+{
+	qNetwork->PreTrainMemory(data);
+}
+
+// Adds the memory to the deep q learning temporal lobe
+void NeuralNetworkLinker::addMemory(Memory* memory) {
+	qNetwork->AddMemory(memory);
+}
+
+// Predicts the best possible action based on the current state and current network bias
+int NeuralNetworkLinker::predictQLearning(int decayStep, vector<float> state)
+{
+	return qNetwork->PredictAction(decayStep, state);
+}
+
+// Trains the current deep q learning network with the passed amount of iterations
+void NeuralNetworkLinker::trainQLearningNetwork(int epochs) 
+{
+	qNetwork->Train(epochs);
+}
+
 // Trains the network with the passed input and output array values
 void NeuralNetworkLinker::setLearningRate(float lRate)
 {
-	network->learningRate = lRate;
+	if (network != NULL) {
+		network->learningRate = lRate;
+	}
+	else if (qNetwork != NULL) {
+		qNetwork->SetLearningRate(lRate);
+	}
 }
 
 // Retrieves the neuron bias at the passed indices
@@ -49,17 +83,35 @@ float NeuralNetworkLinker::getDendriteWeight(int layerIndex, int neuronIndex, in
 // Clears the current network
 void NeuralNetworkLinker::clearNetwork()
 {
-	delete network;
-	network = NULL;
+	if (network != NULL) {
+		delete network;
+		network = NULL;
+	}
+	else if (qNetwork != NULL) {
+		delete qNetwork;
+		qNetwork = NULL;
+	}
 }
 
 // Retrieves the export array of the current network
 float* NeuralNetworkLinker::exportNetwork()
 {
+	NeuralNetwork* exportingNet = NULL;
+	if (network != NULL) {
+		exportingNet = network;
+	}
+	else if (qNetwork != NULL) {
+		exportingNet = qNetwork->network;
+	}
+
+	if (exportingNet == NULL) {
+		return {};
+	}
+
 	vector<float> exported;
-	exported.push_back(network->sizeOfLayers());
-	for (int i = 0; i < network->sizeOfLayers(); i++) {
-		Layer* layer = network->getLayerAt(i);
+	exported.push_back(exportingNet->sizeOfLayers());
+	for (int i = 0; i < exportingNet->sizeOfLayers(); i++) {
+		Layer* layer = exportingNet->getLayerAt(i);
 		exported.push_back(layer->axons.size());
 		for (int j = 0; j < layer->axons.size(); j++) {
 			Axon* axon = layer->axons.at(j);
