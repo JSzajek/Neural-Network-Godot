@@ -21,16 +21,22 @@ But these implementations are done in an exercise to learn about the involved al
 ### Task List: ###
 - [x] Move core functionality to native C++ bindings.
 - [ ] Add convolutional neural network.
-- [ ] Add deep q-learning.
+- [x] Add deep q-learning.
+- [ ] Add importing option on q learning network.
+- [ ] Include memories in export of q learning netwokr.
 - [ ] Improve styling of UI.
-- [ ] Use matrices for increased efficiency
+- [ ] Use matrices for increased efficiency.
 
 #### Detailed Description ####
-The main scence demonstrates these key features within only a few steps. 
+The dense network scence demonstrates these key features within only a few steps. 
 1. Set up layers of neural network through dials
 2. Click and drag to draw a custom image and input data
 3. Input valid number of training epochs, learning rate, and class index.
 4. Begin training.
+
+The q learning network scene demonstrates these key features almost immediately
+1. Pressing the start button
+2. After pretraining of the memory storage, the training will begin and avoidance of obstacles will increase
 
 #### Included ####
 * Primary Scripts, Assets, Imports, Scenes
@@ -41,3 +47,8 @@ The main scence demonstrates these key features within only a few steps.
 
 #### Network Training Example ####
 ![Alt-Text](/Network_Training.gif)
+
+#### Deep Q Learning Example ####
+![Alt-Text](/DeepQTraining_90.gif)
+
+The above image demonstrates the Q learning network after 90 episodes such that obstacle avoidance is improved in comparison to the beginning exploration stages.
