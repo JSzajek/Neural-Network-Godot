@@ -1,4 +1,4 @@
-[gd_scene load_steps=7 format=2]
+[gd_scene load_steps=8 format=2]
 
 [ext_resource path="res://_Scripts/Network_Display.cs" type="Script" id=1]
 [ext_resource path="res://_Scripts/DenseNetworkVisualizer.cs" type="Script" id=2]
@@ -6,6 +6,7 @@
 [ext_resource path="res://_Gui_Imports/Normal_Font.res" type="DynamicFont" id=4]
 [ext_resource path="res://_Assets/SaveDialog.tscn" type="PackedScene" id=5]
 [ext_resource path="res://_Assets/SetupWindow.tscn" type="PackedScene" id=6]
+[ext_resource path="res://_Assets/BaseCanvas.tscn" type="PackedScene" id=7]
 
 [node name="DenseNetworkVisualizer" type="Control"]
 anchor_right = 1.0
@@ -300,7 +301,6 @@ __meta__ = {
 [node name="SetupWindow" parent="." instance=ExtResource( 6 )]
 
 [node name="SaveDialog" parent="." instance=ExtResource( 5 )]
-rect_min_size = Vector2( 400, 140 )
 
 [node name="Popup" type="Popup" parent="."]
 anchor_left = 1.0
@@ -320,6 +320,8 @@ margin_bottom = 14.0
 text = "Something Is Wrong With Input!"
 align = 1
 valign = 1
+
+[node name="BaseCanvas" parent="." instance=ExtResource( 7 )]
 [connection signal="value_changed" from="Interface/Epochs" to="." method="_on_Epochs_value_changed"]
 [connection signal="value_changed" from="Interface/LearningRate" to="." method="_on_LearningRate_value_changed"]
 [connection signal="value_changed" from="Interface/Classification" to="." method="_on_Classification_value_changed"]

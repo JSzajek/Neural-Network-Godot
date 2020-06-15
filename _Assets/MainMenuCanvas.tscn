@@ -92,10 +92,10 @@ margin_top = 75.0
 margin_right = 575.0
 margin_bottom = 128.0
 custom_fonts/font = ExtResource( 3 )
-disabled = true
 text = "    Deep Q-Learning"
 align = 0
 __meta__ = {
 "_edit_use_anchors_": false
 }
 [connection signal="pressed" from="Dense_Network" to="." method="_on_Dense_Network_pressed"]
+[connection signal="pressed" from="Deep_QLearning" to="." method="_on_Deep_QLearning_pressed"]

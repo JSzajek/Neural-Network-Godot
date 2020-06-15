@@ -56,4 +56,13 @@ public static class NodeExtension {
         }
         return results;
     }
+
+    public static void RemoveAllChildren<T>(this Node obj, bool deep = false) where T : class {
+        var children = obj.GetChildren<T>(deep);
+        foreach(var child in children) {
+            if (child is Node node) {
+                obj.RemoveChild(node);
+            }
+        }
+    }
 }

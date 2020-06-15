@@ -13,13 +13,14 @@ public class DllLoader : Node
     // Predefined of library types
     public enum LibType 
     {
-        NEURALNET
+        NEURALNET, DEEPQ
     }
     
     // Loaded Libraries dictionary
     private Dictionary<LibType, string> dllPaths {get;} = new Dictionary<LibType, string>()
     {
         {LibType.NEURALNET, dllDirPath + "NeuralNetworkBinding.dll"},
+        {LibType.DEEPQ, dllDirPath + "NeuralNetworkBinding.dll"},
     };
 
     private Dictionary<LibType, Dll> dllLib;
@@ -104,6 +105,10 @@ public class DllLoader : Node
                 output = new NeuralNetworkLinker(dllPaths[LibType.NEURALNET]); 
                 dllLib.Add(LibType.NEURALNET, output);
                 return output;
+            case LibType.DEEPQ:
+                output = new DeepQLinker(dllPaths[LibType.DEEPQ]);
+                dllLib.Add(LibType.DEEPQ, output);
+                return output;
         }
         return null; // Should never happen
     }
@@ -115,5 +120,13 @@ public class DllLoader : Node
     public NeuralNetworkLinker GetNeuralNetworkLinker()
     {
         return Load(LibType.NEURALNET) as NeuralNetworkLinker;
+    }
+
+    /// <summary>
+    /// Getter method to get a Deep Q network linker library
+    /// </summary>
+    /// <returns>A DeepQLinker</returns>
+    public DeepQLinker GetDeepQLinker() {
+        return Load(LibType.DEEPQ) as DeepQLinker;
     }
 }

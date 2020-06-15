@@ -6,6 +6,12 @@
 
 [node name="DeepQLearning" type="Node"]
 script = ExtResource( 2 )
+Episodes = 100000
+MaxSteps = 10000
+TrainingEpochs = 10
+PreTrainEpisodes = 30
+SampleSize = 20
+trainingWorld = ExtResource( 1 )
 
 [node name="DirectionalLight" type="DirectionalLight" parent="."]
 transform = Transform( 0.965926, 0.12941, -0.224144, 0, 0.866025, 0.5, 0.258819, -0.482963, 0.836516, 0, 13, 0 )
@@ -18,4 +24,6 @@ shadow_enabled = true
 [node name="Camera" type="Camera" parent="."]
 transform = Transform( -1, -3.55271e-15, -8.74228e-08, -7.57103e-08, 0.5, 0.866025, 4.37114e-08, 0.866025, -0.5, 0, 13.1411, -8.75092 )
 
-[node name="RiverWorld" parent="." instance=ExtResource( 1 )]
+[node name="World" type="Spatial" parent="."]
+
+[node name="RiverWorld" parent="World" instance=ExtResource( 1 )]
