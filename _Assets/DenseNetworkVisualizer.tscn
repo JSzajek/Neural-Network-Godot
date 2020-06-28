@@ -23,6 +23,7 @@ layer = -4
 show_behind_parent = true
 anchor_right = 1.0
 anchor_bottom = 1.0
+mouse_filter = 2
 color = Color( 0.803922, 0.803922, 0.803922, 1 )
 __meta__ = {
 "_edit_use_anchors_": false
@@ -43,22 +44,6 @@ autowrap = true
 __meta__ = {
 "_edit_use_anchors_": false
 }
-
-[node name="Network_Display" type="ScrollContainer" parent="."]
-margin_right = 674.0
-margin_bottom = 600.0
-rect_min_size = Vector2( 650, 600 )
-script = ExtResource( 1 )
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="Container" type="HBoxContainer" parent="Network_Display"]
-margin_right = 650.0
-margin_bottom = 600.0
-rect_min_size = Vector2( 650, 600 )
-custom_constants/separation = 30
-alignment = 1
 
 [node name="Interface" type="Control" parent="."]
 anchor_left = 1.0
@@ -298,7 +283,24 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
+[node name="Network_Display" type="ScrollContainer" parent="."]
+margin_right = 674.0
+margin_bottom = 600.0
+rect_min_size = Vector2( 650, 600 )
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Container" type="HBoxContainer" parent="Network_Display"]
+margin_right = 650.0
+margin_bottom = 600.0
+rect_min_size = Vector2( 650, 600 )
+custom_constants/separation = 30
+alignment = 1
+
 [node name="SetupWindow" parent="." instance=ExtResource( 6 )]
+visible = false
 
 [node name="SaveDialog" parent="." instance=ExtResource( 5 )]
 
