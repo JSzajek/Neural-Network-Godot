@@ -23,7 +23,7 @@ But these implementations are done in an exercise to learn about the involved al
 - [ ] Add convolutional neural network.
 - [x] Add deep q-learning.
 - [ ] Add importing option on q learning network.
-- [ ] Include memories in export of q learning netwokr.
+- [ ] Include memories in export of q learning network.
 - [ ] Improve styling of UI.
 - [ ] Use matrices for increased efficiency.
 
@@ -40,7 +40,7 @@ The q learning network scene demonstrates these key features almost immediately
 
 #### Included ####
 * Primary Scripts, Assets, Imports, Scenes
-* Built Executable Project ([here](/_Build/Build_1.0/))
+* Built Executable Project ([here](/_Build/Build_1.1/))
 
 #### Network Setup Example ####
 ![Alt-Text](/Network_Setup_Example.png)
